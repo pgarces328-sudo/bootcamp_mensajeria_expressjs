@@ -1,0 +1,4 @@
+﻿import mongoose, { Schema } from 'mongoose';
+export interface IPackage extends Document { code: string; status: 'Pendiente'|'En tránsito'|'Entregado'|'Cancelado'; origin: string; destination: string; customerName: string; weight: number; createdBy: mongoose.Types.ObjectId; assignedDriver?: mongoose.Types.ObjectId; }
+const packageSchema = new Schema<IPackage>({ code: { type: String, required: true, unique: true, uppercase: true }, status: { type: String, enum: ['Pendiente','En tránsito','Entregado','Cancelado'], default: 'Pendiente' }, origin: { type: String, required: true }, destination: { type: String, required: true }, customerName: { type: String, required: true }, weight: { type: Number, required: true, min: 0.1 }, createdBy: { type: Schema.Types.ObjectId, ref: 'User', required: true }, assignedDriver: { type: Schema.Types.ObjectId, ref: 'User' } }, { timestamps: true });
+export const Package = mongoose.model<IPackage>('Package', packageSchema);
