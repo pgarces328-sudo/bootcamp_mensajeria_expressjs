@@ -1,13 +1,15 @@
-﻿import app from './app';
-import { connectDB } from './lib/mongoose';
-import dotenv from 'dotenv';
+﻿import dotenv from 'dotenv';
 dotenv.config();
+
+import app from './app';
+import { connectDB } from './lib/mongoose';
+
 const PORT = process.env.PORT || 3000;
-(async () => { 
-    await connectDB(); 
-    console.log('DB OK'); 
+
+(async () => {
+    await connectDB();
+    console.log('MongoDB Conectado');
     app.listen(PORT, () => {
-        const msg = "Servidor listo en puerto " + PORT;
-        console.log(msg);
+        console.log('Servidor corriendo en puerto ' + PORT);
     });
 })();

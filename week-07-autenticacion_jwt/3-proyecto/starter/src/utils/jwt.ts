@@ -1,6 +1,88 @@
-﻿import jwt from 'jsonwebtoken';
-const ACC_SEC = process.env.JWT_ACCESS_SECRET || 'secret_access';
-const REF_SEC = process.env.JWT_REFRESH_SECRET || 'secret_refresh';
-export const signAccessToken = (id: string, role: string) => jwt.sign({ id, role }, ACC_SEC, { expiresIn: '15m' });
-export const verifyAccessToken = (token: string) => jwt.verify(token, ACC_SEC) as any;
-export const signRefreshToken = (id: string) => jwt.sign({ id }, REF_SEC, { expiresIn: '7d' });
+﻿import 'dotenv/config';
+
+import jwt, {
+  type JwtPayload,
+} from 'jsonwebtoken';
+
+export interface AccessTokenPayload
+  extends JwtPayload {
+  id: string;
+  role: string;
+}
+
+export interface RefreshTokenPayload
+  extends JwtPayload {
+  id: string;
+}
+
+function getAccessSecret(): string {
+  const secret = process.env.JWT_ACCESS_SECRET;
+
+  if (!secret) {
+    throw new Error(
+      'Falta JWT_ACCESS_SECRET en el archivo .env'
+    );
+  }
+
+  return secret;
+}
+
+function getRefreshSecret(): string {
+  const secret = process.env.JWT_REFRESH_SECRET;
+
+  if (!secret) {
+    throw new Error(
+      'Falta JWT_REFRESH_SECRET en el archivo .env'
+    );
+  }
+
+  return secret;
+}
+
+export function signAccessToken(
+  id: string,
+  role: string
+): string {
+  return jwt.sign(
+    {
+      id,
+      role,
+    },
+    getAccessSecret(),
+    {
+      expiresIn: '15m',
+    }
+  );
+}
+
+export function verifyAccessToken(
+  token: string
+): AccessTokenPayload {
+  return jwt.verify(
+    token,
+    getAccessSecret()
+  ) as AccessTokenPayload;
+}
+
+export function signRefreshToken(
+  id: string
+): string {
+  return jwt.sign(
+    {
+      id,
+    },
+    getRefreshSecret(),
+    {
+      expiresIn: '7d',
+    }
+  );
+}
+
+export function verifyRefreshToken(
+  token: string
+): RefreshTokenPayload {
+  return jwt.verify(
+    token,
+    getRefreshSecret()
+  ) as RefreshTokenPayload;
+}

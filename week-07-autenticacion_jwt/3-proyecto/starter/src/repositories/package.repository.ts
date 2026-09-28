@@ -1,7 +1,96 @@
-﻿import { Package } from '../models/package.model';
-export const findAll = () => Package.find().populate('createdBy').populate('assignedDriver');
-export const findById = (id:string) => Package.findById(id);
-export const create = (d:any) => Package.create(d);
-export const update = (id:string, d:any) => Package.findByIdAndUpdate(id, d, {new:true});
-export const remove = (id:string) => Package.findByIdAndDelete(id);
-export const findByCode = (c:string) => Package.findOne({code:c});
+﻿import { Types } from 'mongoose';
+
+import {
+  CourierPackage,
+  type PackageStatus,
+} from '../models/package.model';
+
+export interface CreatePackageData {
+  code: string;
+  status: PackageStatus;
+  origin: string;
+  destination: string;
+  customerName: string;
+  weight: number;
+  createdBy: Types.ObjectId;
+  assignedDriver?: Types.ObjectId;
+}
+
+export interface UpdatePackageData {
+  status?: PackageStatus;
+  origin?: string;
+  destination?: string;
+  customerName?: string;
+  weight?: number;
+  assignedDriver?: Types.ObjectId;
+}
+
+export function findAll() {
+  return CourierPackage.find()
+    .populate(
+      'createdBy',
+      'name email role'
+    )
+    .populate(
+      'assignedDriver',
+      'name email role'
+    )
+    .sort({
+      createdAt: -1,
+    })
+    .exec();
+}
+
+export function findById(id: string) {
+  return CourierPackage.findById(id)
+    .populate(
+      'createdBy',
+      'name email role'
+    )
+    .populate(
+      'assignedDriver',
+      'name email role'
+    )
+    .exec();
+}
+
+export function findByCode(code: string) {
+  return CourierPackage.findOne({
+    code: code.toUpperCase(),
+  }).exec();
+}
+
+export function createPackage(
+  data: CreatePackageData
+) {
+  return CourierPackage.create(data);
+}
+
+export function updateById(
+  id: string,
+  data: UpdatePackageData
+) {
+  return CourierPackage.findByIdAndUpdate(
+    id,
+    data,
+    {
+      new: true,
+      runValidators: true,
+    }
+  )
+    .populate(
+      'createdBy',
+      'name email role'
+    )
+    .populate(
+      'assignedDriver',
+      'name email role'
+    )
+    .exec();
+}
+
+export function deleteById(id: string) {
+  return CourierPackage.findByIdAndDelete(
+    id
+  ).exec();
+}
