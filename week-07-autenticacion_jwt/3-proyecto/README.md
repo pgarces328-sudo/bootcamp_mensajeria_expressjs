@@ -228,7 +228,7 @@ PATCH /api/v1/packages/:id
 
 ## 📸 Evidencias
 
-Las capturas se encuentran en la carpeta `screenshots/`:
+Las capturas se encuentran en la carpeta `starter/screenshots/`:
 
 | Archivo | Evidencia |
 |---------|-----------|
@@ -262,6 +262,28 @@ Las capturas se encuentran en la carpeta `screenshots/`:
 | Logout real | Se coloca `refreshTokenHash` en `null` |
 | Rutas protegidas | `packageRouter.use(authMiddleware)` |
 | Sin secretos en código | Todo vive en `.env` (ignorado por Git) |
+| Mismo mensaje de error | Login responde `Credenciales invalidas` en ambos casos |
+
+> **Nota sobre la bandera `secure`:**
+> Las cookies se emiten siempre con `httpOnly: true` y `sameSite: 'lax'`.
+> La bandera `secure` se activa automáticamente cuando `NODE_ENV=production`,
+> ya que obliga a enviar la cookie únicamente por HTTPS. En desarrollo local
+> se trabaja sobre `http://localhost`, por lo que mantenerla siempre activa
+> impediría que el navegador o el cliente REST almacenaran la sesión.
+
+### Prevención de enumeración de usuarios
+
+Tanto cuando el correo no existe como cuando la contraseña es incorrecta, la
+API responde con el mismo mensaje y el mismo código de estado:
+
+```json
+{
+  "success": false,
+  "message": "Credenciales invalidas"
+}
+```
+
+De esta forma un atacante no puede deducir qué correos están registrados.
 
 ---
 
