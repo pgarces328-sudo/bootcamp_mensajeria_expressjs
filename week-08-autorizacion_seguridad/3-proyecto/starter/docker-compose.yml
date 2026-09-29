@@ -1,0 +1,11 @@
+services:
+  mongo:
+    image: mongo:7
+    restart: unless-stopped
+    ports:
+      - "27019:27017"
+    volumes:
+      - mensajeria_security_data:/data/db
+
+volumes:
+  mensajeria_security_data:
